@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'UserInfo'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'user'
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      PMA_USER: 'user'
+      PMA_PASSWORD: 'user'
+    ports:
+      - "8081:80"
+    volumes:
+      - ./config.secret.inc.php:/etc/phpmyadmin/config.secret.inc.php
+      - ./apache.conf:/etc/apache2/conf-available/servername.conf
+    command: >
+      /bin/bash -c "ln -s /etc/apache2/conf-available/servername.conf /etc/apache2/conf-enabled/servername.conf && apache2-foreground"
+
+volumes:
+  db_data:
