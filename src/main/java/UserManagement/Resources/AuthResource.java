@@ -1,6 +1,7 @@
 package UserManagement.Resources;
 
 
+import UserManagement.Model.LoginRequest;
 import UserManagement.Model.RegisterRequest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -30,5 +31,13 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response register(RegisterRequest registerRequest) {
         return registerService.registerUser(registerRequest);
+    }
+
+    @POST
+    @Path("/Login")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response login(LoginRequest loginRequest) {
+        return authService.loginAndGenerateToken(loginRequest);
     }
 }

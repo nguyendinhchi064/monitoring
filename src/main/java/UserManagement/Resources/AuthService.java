@@ -2,7 +2,14 @@ package UserManagement.Resources;
 
 import UserManagement.Model.LoginRequest;
 import UserManagement.Model.User;
+import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.Claims;
 import org.jboss.logging.Logger;
 import org.wildfly.security.password.Password;
 import org.wildfly.security.password.PasswordFactory;
@@ -10,11 +17,15 @@ import org.wildfly.security.password.WildFlyElytronPasswordProvider;
 import org.wildfly.security.password.interfaces.BCryptPassword;
 import org.wildfly.security.password.util.ModularCrypt;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
 @ApplicationScoped
 public class AuthService {
+    @Inject
+    EntityManager em;
 
     private static final Logger LOG = Logger.getLogger(AuthService.class);
 
@@ -64,5 +75,40 @@ public class AuthService {
 
     public boolean emailExists(String email) {
         return (User.count("email", email) > 0);
+    }
+
+    @Transactional
+    public Response loginAndGenerateToken(LoginRequest loginRequest) {
+        List<User> userList = User.list("username", loginRequest.getUsername());
+        if (!isValidLogin(loginRequest)) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid username or password").build();
+        }
+
+        User user = getUser(loginRequest);
+
+        List<String> groups;
+        if (user.isAdmin != null && user.isAdmin) {
+            groups = Arrays.asList("User", "Admin");
+        } else {
+            groups = Arrays.asList("User");
+        }
+
+        long durationSeconds = 3600;
+        long currentTimeInSeconds = System.currentTimeMillis() / 1000;
+        long expirationTime = currentTimeInSeconds + durationSeconds;
+
+        String token = Jwt.upn(user.getUserName())
+                .groups(new HashSet<>(groups))
+                .claim("username", user.getUserName())
+                .claim(Claims.sub.name(), String.valueOf(user.userid))
+                .expiresAt(expirationTime)
+                .sign();
+
+        user.accessToken = token;
+        em.merge(user); //This one should be persist to database ?
+
+        return Response.ok("{\"token\":\"" + token + "\"}")
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 }
