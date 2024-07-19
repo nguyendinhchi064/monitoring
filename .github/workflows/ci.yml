@@ -18,6 +18,8 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-          cache: maven
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
       - name: Build
         run: ./gradlew build
