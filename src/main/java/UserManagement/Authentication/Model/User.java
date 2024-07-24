@@ -1,10 +1,9 @@
-package UserManagement.Model;
+package UserManagement.Authentication.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import io.smallrye.jwt.build.Jwt;
 import jakarta.persistence.*;
 
 import java.util.Objects;
@@ -19,6 +18,15 @@ public class User extends PanacheEntityBase {
 
     @Column(nullable = false, unique = true)
     public String username;
+
+    @Column
+    public String phone;
+
+    @Column
+    public String FullName;
+
+    @Column
+    public String address;
 
     public Boolean isAdmin = false;
 
@@ -57,17 +65,6 @@ public class User extends PanacheEntityBase {
         this.email = email;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        if (!Objects.equals(username, user.username)) return false;
-        if (!Objects.equals(password, user.password)) return false;
-        return Objects.equals(email, user.email);
-    }
     public static User findByUsername(String username) {
         return User.find("username", username).firstResult();
     }
@@ -77,4 +74,24 @@ public class User extends PanacheEntityBase {
     }
 
 
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setFullName(String fullName) {
+        FullName = fullName;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User that = (User) o;
+        return Objects.equals(username, that.username) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(email, that.email);
+    }
 }

@@ -36,7 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (response.ok) {
-                loginResponse.innerText = `Login successful! Token: ${result.token}`;
+                localStorage.setItem('token', result.token);
+                loginResponse.innerText = `Login successful!`;
+                window.location.href = 'infoForm.html'
             } else {
                 loginResponse.innerText = `Login failed: ${result.message}`;
             }

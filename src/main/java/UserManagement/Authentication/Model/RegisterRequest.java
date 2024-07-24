@@ -1,4 +1,4 @@
-package UserManagement.Model;
+package UserManagement.Authentication.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -47,7 +47,6 @@ public class RegisterRequest {
     }
 
 
-    // Equals and hashCode methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

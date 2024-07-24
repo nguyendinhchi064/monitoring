@@ -1,7 +1,7 @@
-package UserManagement.Resources;
+package UserManagement.Authentication.Resources;
 
-import UserManagement.Model.LoginRequest;
-import UserManagement.Model.User;
+import UserManagement.Authentication.Model.LoginRequest;
+import UserManagement.Authentication.Model.User;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

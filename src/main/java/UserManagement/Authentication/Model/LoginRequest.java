@@ -1,4 +1,4 @@
-package UserManagement.Model;
+package UserManagement.Authentication.Model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,8 +9,6 @@ public class LoginRequest {
     private String username;
     @JsonProperty
     private String password;
-
-    // Constructor with arguments
 
     public String getUsername() {
         return username;

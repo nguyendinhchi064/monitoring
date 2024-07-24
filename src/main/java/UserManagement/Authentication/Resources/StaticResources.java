@@ -1,4 +1,4 @@
-package UserManagement.Resources;
+package UserManagement.Authentication.Resources;
 
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.ext.web.Router;

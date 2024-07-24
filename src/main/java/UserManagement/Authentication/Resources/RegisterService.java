@@ -1,7 +1,7 @@
-package UserManagement.Resources;
+package UserManagement.Authentication.Resources;
 
-import UserManagement.Model.RegisterRequest;
-import UserManagement.Model.User;
+import UserManagement.Authentication.Model.RegisterRequest;
+import UserManagement.Authentication.Model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -32,6 +32,9 @@ public class RegisterService {
         newUser.setUserName(registerRequest.getUsername());
         newUser.setPassword(registerRequest.getPassword());
         newUser.setEmail(registerRequest.getEmail());
+        newUser.setFullName(null);
+        newUser.setPhone(null);
+        newUser.setAddress(null);
         newUser.persist();
 
         return Response.status(Response.Status.CREATED).entity("{\"message\":\"User registered successfully\"}").build();

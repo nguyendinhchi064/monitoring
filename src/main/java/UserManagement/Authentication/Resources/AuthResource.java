@@ -1,8 +1,10 @@
-package UserManagement.Resources;
+package UserManagement.Authentication.Resources;
 
 
-import UserManagement.Model.LoginRequest;
-import UserManagement.Model.RegisterRequest;
+import UserManagement.Authentication.Model.InformationForm;
+import UserManagement.Authentication.Model.LoginRequest;
+import UserManagement.Authentication.Model.RegisterRequest;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -21,6 +23,9 @@ public class AuthResource {
     @Inject
     RegisterService registerService;
 
+    @Inject
+    UserService userService;
+
     @POST
     @Transactional
     @Path("/Register")
@@ -36,5 +41,20 @@ public class AuthResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response login(LoginRequest loginRequest) {
         return authService.loginAndGenerateToken(loginRequest);
+    }
+
+    @POST
+    @Path("/updateInfo")
+    @RolesAllowed({"User","Admin"})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response updateInfo(InformationForm informationForm) {
+        try {
+            userService.updateUserDetails(informationForm);
+            return Response.ok("User information filled successfully").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }
     }
 }
