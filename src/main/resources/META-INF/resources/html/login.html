@@ -1,17 +1,35 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <script src="../js/login.js" defer></script>
+    <link rel="stylesheet" href="../css/Signup.css">
 </head>
 <body>
-<h1 style="text-align:center;">Login</h1>
-<form id="loginForm" style="text-align:center;">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username"><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password"><br><br>
-    <input type="submit" value="Login">
-</form>
-<div id="loginResponse" style="text-align:center;"></div>
-<p style="text-align:center;"> Don't have an account? <a href="register.html"> Register now</a> </p>
+<div class="wrapper">
+    <h1>Login</h1>
+    <form id="loginForm">
+        <div class="input-box">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username">
+            <i class='bx bxs-user'></i>
+            <span class="error-message"></span>
+        </div>
+        <div class="input-box">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div style="text-align: center">
+            <input class="btn" type="submit" value="Login">
+        </div>
+        <div id="loginResponse" class="error-message-all"></div>
+        <div class="register-link">
+            <p>Don't have an account? <a href="register.html">Register now</a></p>
+        </div>
+    </form>
+</div>
 </body>
+</html>

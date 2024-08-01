@@ -19,24 +19,29 @@ public class UserService {
     @Inject
     JsonWebToken jwt;
 
-    //TODO: Need the case if the user login have already got the update info
     @Transactional
     public Response updateUserDetails(InformationForm infoForm) {
         String username = jwt.getName();
-
-        User existingUser = User.find("username", username).firstResult();
+        User existingUser = User.findByUsername(username);
 
         if (existingUser != null) {
             existingUser.setFullName(infoForm.getFullName());
             existingUser.setPhone(infoForm.getPhone());
             existingUser.setAddress(infoForm.getAddress());
+            existingUser.setInfoUpdated(true);
             em.merge(existingUser);
         } else {
             throw new IllegalArgumentException("User not found");
         }
+
         return Response.status(Response.Status.CREATED)
-                .entity("{\"message\":\"User Filled successfully\"}")
-                .type(MediaType.APPLICATION_JSON_TYPE)
+                .entity("{\"message\":\"User information updated successfully\"}")
+                .type(MediaType.APPLICATION_JSON)
                 .build();
+    }
+
+    public boolean isUserInfoUpdated(String username) {
+        User user = User.find("username", username).firstResult();
+        return user != null && user.getInfoUpdated();
     }
 }

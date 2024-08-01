@@ -27,6 +27,9 @@ public class AuthService {
     @Inject
     EntityManager em;
 
+    @Inject
+    UserService userService;
+
     private static final Logger LOG = Logger.getLogger(AuthService.class);
 
     public boolean verifyPassword(String bCryptPasswordHash, String passwordToVerify) {
@@ -69,6 +72,7 @@ public class AuthService {
         String regex = "^(?=.*[A-Z])(?=.*[!@#$%^&*()-+]).{5,}$";
         return Pattern.matches(regex, password);
     }
+
     public boolean userExists(String username) {
         return (User.count("username", username) > 0);
     }
@@ -79,15 +83,24 @@ public class AuthService {
 
     @Transactional
     public Response loginAndGenerateToken(LoginRequest loginRequest) {
-        List<User> userList = User.list("username", loginRequest.getUsername());
         if (!isValidLogin(loginRequest)) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid username or password").build();
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"message\":\"Invalid username or password\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
 
         User user = getUser(loginRequest);
 
+        if (user == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"message\":\"User not found\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+
         List<String> groups;
-        if (user.isAdmin != null && user.isAdmin) {
+        if (user.isAdmin != null && user.isAdmin.equals(true)) {
             groups = Arrays.asList("User", "Admin");
         } else {
             groups = Arrays.asList("User");
@@ -105,10 +118,19 @@ public class AuthService {
                 .sign();
 
         user.accessToken = token;
-        em.merge(user); //This one should be persist to database ?
+        em.merge(user);
+
+        if (!userService.isUserInfoUpdated(user.getUserName())) {
+            System.out.println("Token for 428 response: " + token);
+            return Response.status(Response.Status.PRECONDITION_REQUIRED)
+                    .entity("{\"message\":\"User information update required\", \"token\":\"" + token + "\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
 
         return Response.ok("{\"token\":\"" + token + "\"}")
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
+
 }

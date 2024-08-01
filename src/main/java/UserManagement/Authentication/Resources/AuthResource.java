@@ -45,16 +45,27 @@ public class AuthResource {
 
     @POST
     @Path("/updateInfo")
-    @RolesAllowed({"User","Admin"})
+    @RolesAllowed("User")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     public Response updateInfo(InformationForm informationForm) {
         try {
             userService.updateUserDetails(informationForm);
-            return Response.ok("User information filled successfully").build();
+            return Response.ok("{\"message\":\"User information updated successfully\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("{\"message\":\"" + e.getMessage() + "\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"message\":\"An unexpected error occurred\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
         }
     }
+
 }

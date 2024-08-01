@@ -1,18 +1,36 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Update Information</title>
   <script src="../js/infoForm.js" defer></script>
+  <link rel="stylesheet" href="../css/Signup.css">
 </head>
 <body>
-<h1 style="text-align:center;">Update Information</h1>
-<form id="infoForm" style="text-align:center;">
-  <label for="fullName">Full Name:</label>
-  <input type="text" id="fullName" name="fullName"><br><br>
-  <label for="phone">Phone:</label>
-  <input type="text" id="phone" name="phone"><br><br>
-  <label for="address">Address:</label>
-  <input type="text" id="address" name="address"><br><br>
-  <input type="submit" value="Update">
-</form>
-<div id="infoResponse" style="text-align:center;"></div>
+<div class="wrapper">
+  <h1>Update Information</h1>
+  <form id="infoForm">
+    <div class="input-box">
+      <label for="fullName">Full Name:</label>
+      <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+      <i class='bx bxs-user'></i>
+    </div>
+    <div class="input-box">
+      <label for="phone">Phone:</label>
+      <input type="text" id="phone" name="phone" placeholder="Enter your phone number">
+      <i class='bx bxs-phone'></i>
+    </div>
+    <div class="input-box">
+      <label for="address">Address:</label>
+      <input type="text" id="address" name="address" placeholder="Enter your address">
+      <i class='bx bxs-home'></i>
+    </div>
+    <div style="text-align: center">
+      <input class="btn" type="submit" value="Update">
+    </div>
+    <div id="infoResponse" class="error-message-all"></div>
+  </form>
+</div>
 </body>
+</html>

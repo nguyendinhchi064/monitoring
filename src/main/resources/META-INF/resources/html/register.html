@@ -1,19 +1,45 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <script src="../js/register.js" defer></script>
+    <link rel="stylesheet" href="../css/Signup.css">
 </head>
 <body>
-<h1 style="text-align:center;">Register</h1>
-<form id="registerForm" style="text-align:center;">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username"><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password"><br><br>
-    <label for="confirmPassword">Confirm Password:</label>
-    <input type="password" id="confirmPassword" name="confirmPassword"><br><br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email"><br><br>
-    <input type="submit" value="Register">
-</form>
+<div class="wrapper">
+    <h1>Register</h1>
+    <form id="registerForm">
+        <div class="input-box">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username">
+            <i class='bx bxs-user'></i>
+            <span class="error-message"></span>
+        </div>
+        <div class="input-box">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div class="input-box">
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password">
+            <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div class="input-box">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <i class='bx bxs-envelope'></i>
+        </div>
+        <div style="text-align: center">
+            <input class="btn" type="submit" value="Register">
+        </div>
+        <div id="registerResponse" class="error-message-all"></div>
+        <div class="register-link">
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </form>
+</div>
 </body>
+</html>

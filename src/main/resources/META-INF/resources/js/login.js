@@ -1,53 +1,25 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('loginForm');
-    if (!loginForm) {
-        console.error('Login form not found');
-        return;
-    }
+document.getElementById('loginForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-    loginForm.addEventListener('submit', async function(event) {
-        event.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-
-        try {
-            const response = await fetch('/Auth/Login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': '*/*'
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            let result;
-            try {
-                result = await response.json();
-            } catch (e) {
-                console.error('Failed to parse JSON response', e);
-                result = { message: 'Failed to parse JSON response' };
-            }
-
-            const loginResponse = document.getElementById('loginResponse');
-            if (!loginResponse) {
-                console.error('Login response element not found');
-                return;
-            }
-
-            if (response.ok) {
-                localStorage.setItem('token', result.token);
-                loginResponse.innerText = `Login successful!`;
-                window.location.href = 'infoForm.html'
-            } else {
-                loginResponse.innerText = `Login failed: ${result.message}`;
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            const loginResponse = document.getElementById('loginResponse');
-            if (loginResponse) {
-                loginResponse.innerText = 'Login failed: Server error';
-            }
-        }
+    const response = await fetch('/Auth/Login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
     });
+    const responseData = await response.json();
+    if (response.status === 428) {
+        localStorage.setItem('token', responseData.token);
+        window.location.href = 'infoForm.html';
+    } else if (response.ok) {
+        localStorage.setItem('token', responseData.token);
+        window.location.href = 'UserProfile.html';
+    } else {
+        const errorText = await response.json();
+        document.getElementById('loginResponse').innerText = errorText.message;
+    }
 });

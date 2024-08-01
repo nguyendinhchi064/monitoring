@@ -28,10 +28,10 @@ public class User extends PanacheEntityBase {
     @Column
     public String address;
 
+    @JsonIgnore
     public Boolean isAdmin = false;
 
     @Column(nullable = false, unique = true)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -41,12 +41,16 @@ public class User extends PanacheEntityBase {
     @JsonIgnore
     public String accessToken;
 
+    @Column(nullable = false)
+    @JsonIgnore
+    public Boolean isInfoUpdated = false;
+
     public String getUserName() {
         return username;
     }
 
-    public void setUserName(String userName) {
-        this.username = userName;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -78,8 +82,8 @@ public class User extends PanacheEntityBase {
         this.phone = phone;
     }
 
-    public void setFullName(String fullName) {
-        FullName = fullName;
+    public void setFullName(String FullName) {
+        this.FullName = FullName;
     }
 
     public void setAddress(String address) {
@@ -93,5 +97,14 @@ public class User extends PanacheEntityBase {
         return Objects.equals(username, that.username) &&
                 Objects.equals(password, that.password) &&
                 Objects.equals(email, that.email);
+    }
+
+    public Boolean getInfoUpdated() {
+        return isInfoUpdated;
+    }
+
+    @JsonIgnore
+    public void setInfoUpdated(Boolean infoUpdated) {
+        isInfoUpdated = infoUpdated;
     }
 }
