@@ -17,7 +17,7 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
         window.location.href = 'infoForm.html';
     } else if (response.ok) {
         localStorage.setItem('token', responseData.token);
-        window.location.href = 'UserProfile.html';
+        window.location.href = 'MainPage.html';
     } else {
         const errorText = await response.json();
         document.getElementById('loginResponse').innerText = errorText.message;
