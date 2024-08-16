@@ -44,7 +44,14 @@ public class MongoDBService {
 
     public List<Document> getData(String collectionName) {
         MongoCollection<Document> collection = getCollection(collectionName);
-        return collection.find().into(new ArrayList<>());
+        List<Document> documents = collection.find().into(new ArrayList<>());
+
+        //Remove The Id =))
+        for (Document doc : documents) {
+            doc.remove("_id");
+        }
+
+        return documents;
     }
 
     public void updateData(String collectionName, Document query, Document update) {

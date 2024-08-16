@@ -1,77 +1,75 @@
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip();
-    var actions = $("table td:last-child").html();
+document.addEventListener('DOMContentLoaded', () => {
+    const apiBaseUrl = 'http://localhost:8080/log';
+    const token = localStorage.getItem('token');
 
-    // Append table with add row form on add new row button click
-    $(".add-new").click(function(){
-        $(this).attr("disabled", "disabled");
-        var index = $("table tbody tr:last-child").index();
-        var row = '<tr>' +
-            '<td><input type="text" class="form-control" name="name" id="name"></td>' +
-            '<td><input type="text" class="form-control" name="description" id="description"></td>' +
-            '<td><input type="text" class="form-control" name="other" id="other"></td>' +
-            '<td>' + actions + '</td>' +
-            '</tr>';
-        $("table").append(row);
-        $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-
-    // Add new column
-    $(".add-column").click(function(){
-        $("table thead tr").each(function(){
-            $(this).find('th:last-child').prev().after('<th>New Column</th>');
-        });
-
-        $("table tbody tr").each(function(){
-            $(this).find('td:last-child').prev().after('<td><input type="text" class="form-control" name="newColumn"></td>');
-        });
-
-        actions = $("table td:last-child").html();
-    });
-
-    // Delete column
-    $(".delete-column").click(function(){
-        $("table thead tr th:last-child").prev().remove();
-        $("table tbody tr").each(function(){
-            $(this).find('td:last-child').prev().remove();
-        });
-    });
-
-    // Add row on add button click
-    $(document).on("click", ".add", function(){
-        var empty = false;
-        var input = $(this).parents("tr").find('input[type="text"]');
-        input.each(function(){
-            if(!$(this).val()){
-                $(this).addClass("error");
-                empty = true;
-            } else{
-                $(this).removeClass("error");
-            }
-        });
-        $(this).parents("tr").find(".error").first().focus();
-        if(!empty){
-            input.each(function(){
-                $(this).parent("td").html($(this).val());
+    // Function to create a new collection
+    async function createCollection(collectionName) {
+        try {
+            const response = await fetch(`${apiBaseUrl}/${collectionName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            $(this).parents("tr").find(".add, .edit").toggle();
-            $(".add-new").removeAttr("disabled");
+            if (response.ok) {
+                alert('Collection created successfully!');
+                fetchCollections(); // Refresh the list of collections
+            } else {
+                const errorText = await response.text();
+                alert('Failed to create collection. ' + errorText);
+            }
+        } catch (error) {
+            console.error('Error creating collection:', error);
+        }
+    }
+
+    // Function to fetch all collections and populate the table
+    async function fetchCollections() {
+        try {
+            const response = await fetch(`${apiBaseUrl}/collections`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const collections = await response.json();
+                populateCollectionsTable(collections);
+            } else {
+                const errorText = await response.text();
+                alert('Failed to fetch collections. ' + errorText);
+            }
+        } catch (error) {
+            console.error('Error fetching collections:', error);
+        }
+    }
+
+    // Function to populate the table with the list of collections
+    function populateCollectionsTable(collections) {
+        const tableBody = document.getElementById('collections-table-body');
+        tableBody.innerHTML = ''; // Clear the table before inserting new data
+
+        collections.forEach(collectionName => {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.textContent = collectionName;
+            row.appendChild(cell);
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Event listener for the Submit button to create a new collection
+    document.querySelector('.btn-create-collection').addEventListener('click', () => {
+        const collectionName = document.getElementById('NewCollectionName').value.trim();
+        if (collectionName) {
+            createCollection(collectionName);
+        } else {
+            alert('Please enter a collection name.');
         }
     });
 
-    // Edit row on edit button click
-    $(document).on("click", ".edit", function(){
-        $(this).parents("tr").find("td:not(:last-child)").each(function(){
-            $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
-        });
-        $(this).parents("tr").find(".add, .edit").toggle();
-        $(".add-new").attr("disabled", "disabled");
-    });
-
-    // Delete row on delete button click
-    $(document).on("click", ".delete", function(){
-        $(this).parents("tr").remove();
-        $(".add-new").removeAttr("disabled");
-    });
+    // Fetch and display the list of collections when the page loads
+    fetchCollections();
 });

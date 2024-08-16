@@ -1,5 +1,6 @@
 package MongoTable.Resources;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Path;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -10,6 +11,7 @@ import org.bson.Document;
 import java.util.List;
 
 @Path("/log")
+@RolesAllowed("User")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class LogResource {

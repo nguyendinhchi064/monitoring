@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Tables - SB Admin</title>
+    <title>Tables - Viewing</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="../css/styles.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -20,14 +20,15 @@
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="MainPage.html">USTH Monitor</a>
+    <a class="navbar-brand ps-3" href="../html/MainPage.html">USTH Monitor</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-    <!-- Navbar-->
+    <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
         </div>
     </form>
+    <!-- Navbar-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
@@ -50,18 +51,6 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Dashboard
                     </a>
-                    <div class="sb-sidenav-menu-heading">Interface</div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Layouts
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">Static Navigation</a>
-                            <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
-                        </nav>
-                    </div>
                     <div class="sb-sidenav-menu-heading">Addons</div>
                     <a class="nav-link" href="charts.html">
                         <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
@@ -71,6 +60,17 @@
                         <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                         Tables
                     </a>
+                    <div class="sb-sidenav-menu-heading">Connections</div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Connections
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="Connections.html">Add new connection</a>
+                        </nav>
+                    </div>
                 </div>
             </div>
             <div class="sb-sidenav-footer">
@@ -86,24 +86,23 @@
                     <li class="breadcrumb-item"><a href="MainPage.html">Dashboard</a></li>
                     <li class="breadcrumb-item active">Tables</li>
                 </ol>
-                <div class="card mb-4">
-                    <div class="card-body">
-                        DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
-                        <a target="_blank" href="https://datatables.net/">official DataTables documentation</a>.
-                    </div>
-                </div>
+
+                <!-- Table 1: Show Data in a Specific Collection -->
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        Adding data
+                        Show Data in Table
                         <div class="table-title">
                             <div class="row">
-                                <div class="col-sm-6"><h2> <b></b></h2></div>
+                                <div class="col-sm-2"></div>
                                 <div class="col-sm-3">
-                                    <button type="button" class="btn btn-info add-new"><i class="fa fa-plus"></i> Add New Row</button><br></br>
+                                    <label for="CollectionName">
+                                        <input type="text" id="CollectionName" placeholder="Enter Collection Name">
+                                    </label>
                                 </div>
+                                <div class="col-sm-4"></div>
                                 <div class="col-sm-3">
-                                    <button type="button" class="btn btn-info add-column"><i class="fa fa-plus"></i> Add New Column</button>
+                                    <button type="button" class="btn btn-info btn-fetch-data"><i class="fa fa-plus"></i> Show </button>
                                 </div>
                             </div>
                         </div>
@@ -112,46 +111,14 @@
                         <div class="container-lg">
                             <div class="table-responsive">
                                 <div class="table-wrapper">
-                                    <table class="table table-bordered">
+                                    <table id="collection-data-table" class="table table-bordered">
                                         <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                            <th>Other</th>
-                                            <th>Actions</th>
+                                            <!-- Headers will be dynamically inserted here -->
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>
-                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
-                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>
-                                            </td>
-                                        </tr>
-<!--                                        <tr>-->
-<!--                                            <td></td>-->
-<!--                                            <td></td>-->
-<!--                                            <td></td>-->
-<!--                                            <td>-->
-<!--                                                <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>-->
-<!--                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>-->
-<!--                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>-->
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td></td>-->
-<!--                                            <td></td>-->
-<!--                                            <td></td>-->
-<!--                                            <td>-->
-<!--                                                <a class="add" title="Add" data-toggle="tooltip"><i class="material-icons">&#xE03B;</i></a>-->
-<!--                                                <a class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>-->
-<!--                                                <a class="delete" title="Delete" data-toggle="tooltip"><i class="material-icons">&#xE872;</i></a>-->
-<!--                                            </td>-->
-<!--                                        </tr>-->
+                                        <tbody id="collection-data-body">
+                                        <!-- Data will be dynamically inserted here -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -159,14 +126,41 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Table 2: List All Collections and Create New Collection -->
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
                         DataTable
+                        <div class="table-title">
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-3">
+                                    <label for="NewCollectionName">
+                                        <input type="text" id="NewCollectionName" placeholder="Enter Collection Name">
+                                    </label>
+                                </div>
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-info btn-create-collection"><i class="fa fa-plus"></i> Submit </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body">
+                        <table id="collections-table" class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Collection Name</th>
+                            </tr>
+                            </thead>
+                            <tbody id="collections-table-body">
+                            <!-- Collections will be dynamically inserted here -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+
             </div>
         </main>
         <footer class="py-4 bg-light mt-auto">
@@ -179,9 +173,9 @@
     </div>
 </div>
 <script src="../js/AddMongoTable.js"></script>
+<script src="../js/ShowDataTables.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../js/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-<script src="js/datatables-simple-demo.js"></script>
 </body>
 </html>
