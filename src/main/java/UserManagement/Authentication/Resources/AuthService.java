@@ -2,6 +2,8 @@ package UserManagement.Authentication.Resources;
 
 import UserManagement.Authentication.Model.LoginRequest;
 import UserManagement.Authentication.Model.User;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -29,6 +31,9 @@ public class AuthService {
 
     @Inject
     UserService userService;
+
+    @Inject
+    MongoClient mongoClient;
 
     private static final Logger LOG = Logger.getLogger(AuthService.class);
 
@@ -99,6 +104,10 @@ public class AuthService {
                     .build();
         }
 
+        // Create a MongoDB database named after the username
+        createMongoDatabaseForUser(user.getUserName());
+
+        // JWT token generation and user authentication logic
         List<String> groups;
         if (user.isAdmin != null && user.isAdmin.equals(true)) {
             groups = Arrays.asList("User", "Admin");
@@ -121,7 +130,6 @@ public class AuthService {
         em.merge(user);
 
         if (!userService.isUserInfoUpdated(user.getUserName())) {
-            System.out.println("Token for 428 response: " + token);
             return Response.status(Response.Status.PRECONDITION_REQUIRED)
                     .entity("{\"message\":\"User information update required\", \"token\":\"" + token + "\"}")
                     .type(MediaType.APPLICATION_JSON)
@@ -131,6 +139,11 @@ public class AuthService {
         return Response.ok("{\"token\":\"" + token + "\"}")
                 .type(MediaType.APPLICATION_JSON)
                 .build();
+    }
+
+    private void createMongoDatabaseForUser(String username) {
+        MongoDatabase userDatabase = mongoClient.getDatabase(username);
+        System.out.println("Created MongoDB database for user: " + username);
     }
 
 }

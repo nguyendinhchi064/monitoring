@@ -7,6 +7,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.Document;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
 
@@ -19,16 +20,25 @@ public class LogResource {
     @Inject
     MongoDBService mongoDBService;
 
+    @Inject
+    JsonWebToken jwt;
+
+    private String getDatabaseName() {
+        // Extract the username from the JWT claim
+        return jwt.getClaim("username");
+    }
+
     @POST
     @Path("/{collectionName}")
     public Response createCollection(@PathParam("collectionName") String collectionName) {
-        mongoDBService.createCollection(collectionName);
+        mongoDBService.createCollection(getDatabaseName(), collectionName);
         return Response.ok("Collection created successfully").build();
     }
+
     @GET
     @Path("/collections")
     public Response listCollections() {
-        List<String> collections = mongoDBService.listCollections();
+        List<String> collections = mongoDBService.listCollections(getDatabaseName());
         return Response.ok(collections)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
@@ -38,7 +48,7 @@ public class LogResource {
     @Path("/{collectionName}/data")
     public Response saveData(@PathParam("collectionName") String collectionName,
                              List<Document> data) {
-        data.forEach(doc -> mongoDBService.saveData(collectionName, doc));
+        data.forEach(doc -> mongoDBService.saveData(getDatabaseName(), collectionName, doc));
         return Response.ok("Data saved successfully")
                 .type(MediaType.APPLICATION_JSON)
                 .build();
@@ -47,7 +57,7 @@ public class LogResource {
     @GET
     @Path("/{collectionName}/data")
     public Response getData(@PathParam("collectionName") String collectionName) {
-        List<Document> data = mongoDBService.getData(collectionName);
+        List<Document> data = mongoDBService.getData(getDatabaseName(), collectionName);
         return Response.ok(data)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
@@ -65,7 +75,7 @@ public class LogResource {
                     update.append(key, updateData.get(key));
                 }
             });
-            mongoDBService.updateData(collectionName, query, update);
+            mongoDBService.updateData(getDatabaseName(), collectionName, query, update);
         }
         return Response.ok("Data updated successfully")
                 .type(MediaType.APPLICATION_JSON)
@@ -76,7 +86,7 @@ public class LogResource {
     @Path("/{collectionName}/data")
     public Response deleteData(@PathParam("collectionName") String collectionName,
                                List<Document> queries) {
-        queries.forEach(query -> mongoDBService.deleteData(collectionName, query));
+        queries.forEach(query -> mongoDBService.deleteData(getDatabaseName(), collectionName, query));
         return Response.ok("Data deleted successfully")
                 .type(MediaType.APPLICATION_JSON)
                 .build();

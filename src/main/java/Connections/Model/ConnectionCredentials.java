@@ -1,14 +1,22 @@
 package Connections.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 //A DTO (Data Transfer Object) file to cook the credentials
 public class ConnectionCredentials {
     private String mysqlHost;
     private String mysqlPort;
     private String mysqlDb;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String mysqlUser;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String mysqlPassword;
     private String tableName;
+
     private String mongoConnectionString;
+
     private String mongoDatabase;
     private String mongoCollection;
 

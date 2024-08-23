@@ -1,21 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="description" content="" />
   <meta name="author" content="" />
-  <title>Tables - Viewing</title>
+  <title>Dashboard - Add Connection</title>
   <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
   <link href="../css/styles.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -80,35 +74,59 @@
   <div id="layoutSidenav_content">
     <main>
       <div class="container-fluid px-4">
-        <h1 class="mt-4">Connections</h1>
+        <h1 class="mt-4">Add New Connection</h1>
         <ol class="breadcrumb mb-4">
           <li class="breadcrumb-item"><a href="MainPage.html">Dashboard</a></li>
-          <li class="breadcrumb-item active">Connections</li>
+          <li class="breadcrumb-item active">Add Connection</li>
         </ol>
         <div class="card mb-4">
           <div class="card-body">
-            Connections is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the
-            <a target="_blank" href="https://datatables.net/">official DataTables documentation</a>
-            .
+            <form id="connection-form">
+              <div class="mb-3">
+                <label for="mysqlHost" class="form-label">MySQL Host</label>
+                <input type="text" class="form-control" id="mysqlHost" placeholder="localhost">
+              </div>
+              <div class="mb-3">
+                <label for="mysqlPort" class="form-label">MySQL Port</label>
+                <input type="text" class="form-control" id="mysqlPort" placeholder="3306">
+              </div>
+              <div class="mb-3">
+                <label for="mysqlDb" class="form-label">MySQL Database Name</label>
+                <input type="text" class="form-control" id="mysqlDb" placeholder="UserInfo">
+              </div>
+              <div class="mb-3">
+                <label for="mysqlUser" class="form-label">MySQL Username</label>
+                <input type="text" class="form-control" id="mysqlUser" placeholder="user">
+              </div>
+              <div class="mb-3">
+                <label for="mysqlPassword" class="form-label">MySQL Password</label>
+                <input type="password" class="form-control" id="mysqlPassword">
+              </div>
+              <div class="mb-3">
+                <label for="tableName" class="form-label">MySQL Table Name</label>
+                <input type="text" class="form-control" id="tableName" placeholder="user_db">
+              </div>
+              <div class="mb-3">
+                <label for="mongoCollection" class="form-label">MongoDB Collection</label>
+                <input type="text" class="form-control" id="mongoCollection" placeholder="Testing5">
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
           </div>
         </div>
-
       </div>
     </main>
-
     <footer class="py-4 bg-light mt-auto">
       <div class="container-fluid px-4">
         <div class="d-flex align-items-center justify-content-between small">
-          <div class="text-muted">Welcome to &UpTeeArrow; USTH monitor 2024</div>
+          <div class="text-muted">Welcome to USTH Monitor 2024</div>
         </div>
       </div>
     </footer>
-
   </div>
-
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../js/scripts.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+<script src="../js/Connections.js"></script>
 </body>
 </html>
