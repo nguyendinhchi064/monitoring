@@ -58,7 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
             tableBody.appendChild(row);
         });
+
+        // Initialize DataTable after populating the table
+        const table = new simpleDatatables.DataTable("#collections-table", {
+            searchable: true,
+            fixedHeight: true
+        });
     }
+
+    fetchCollections();
 
     // Event listener for the Submit button to create a new collection
     document.querySelector('.btn-create-collection').addEventListener('click', () => {

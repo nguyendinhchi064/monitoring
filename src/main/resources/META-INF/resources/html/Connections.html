@@ -9,7 +9,9 @@
   <title>Dashboard - Add Connection</title>
   <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
   <link href="../css/styles.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -61,7 +63,7 @@
           </a>
           <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
             <nav class="sb-sidenav-menu-nested nav">
-              <a class="nav-link" href="Connections.html">Add new connection</a>
+              <a class="nav-link" href="Connections.html">Add MySQL connection</a>
             </nav>
           </div>
         </div>
@@ -74,10 +76,10 @@
   <div id="layoutSidenav_content">
     <main>
       <div class="container-fluid px-4">
-        <h1 class="mt-4">Add New Connection</h1>
+        <h1 class="mt-4">Add MySQL Connection</h1>
         <ol class="breadcrumb mb-4">
           <li class="breadcrumb-item"><a href="MainPage.html">Dashboard</a></li>
-          <li class="breadcrumb-item active">Add Connection</li>
+          <li class="breadcrumb-item active">Add MySQL Connection</li>
         </ol>
         <div class="card mb-4">
           <div class="card-body">
@@ -110,11 +112,37 @@
                 <label for="mongoCollection" class="form-label">MongoDB Collection</label>
                 <input type="text" class="form-control" id="mongoCollection" placeholder="Testing5">
               </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <button type="submit" class="btn btn-primary" id="submitDataTransfer">Submit</button>
             </form>
           </div>
         </div>
       </div>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Job Status</h1>
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Job Status Table
+            <div class="table-title">
+              <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-6"></div>
+                <div class="col-sm-1">
+                  <button type="button" class="btn btn-primary" id="refreshTable">Refresh</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <table id="jobStatusTable" class="table table-bordered">
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     </main>
     <footer class="py-4 bg-light mt-auto">
       <div class="container-fluid px-4">

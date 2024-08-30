@@ -1,81 +1,87 @@
 package Connections.Resources;
 
 import Connections.Model.ConnectionCredentials;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import org.bson.Document;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.quartz.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Path("/db_transfer")
 @RolesAllowed("User")
 public class Testing {
 
-    @Context
-    SecurityContext securityContext;
-
     @Inject
     JsonWebToken jwt;
+
+    @Inject
+    JobStatusListener jobStatusListener;
+
+    @Inject
+    Scheduler quartzScheduler;
+
+    @Inject
+    ObjectMapper objectMapper;  // Inject Jackson ObjectMapper
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response transferData(ConnectionCredentials userInput) {
-        String jdbcUrl = String.format("jdbc:mysql://%s:%s/%s", userInput.getMysqlHost(), userInput.getMysqlPort(), userInput.getMysqlDb());
-
-        // Extract the username from the JWT token
+    public Response transferData(ConnectionCredentials userInput) throws SchedulerException, JsonProcessingException {
         String username = jwt.getClaim("username");
+        String userId = jwt.getClaim("sub");
+        String jobId = UUID.randomUUID().toString();
 
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, userInput.getMysqlUser(), userInput.getMysqlPassword())) {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM " + userInput.getTableName());
+        System.out.println("MySQL User: " + userInput.getMysqlUser());
 
-            List<Document> documents = new ArrayList<>();
+        String mysqlUrl = String.format("jdbc:mysql://%s:%s/%s", userInput.getMysqlHost(), userInput.getMysqlPort(), userInput.getMysqlDb());
+        jobStatusListener.jobToBeExecuted(jobId, username, userId, mysqlUrl, userInput.getMysqlDb(), userInput.getTableName(), userInput.getMongoCollection());
 
-            // Get metadata to dynamically retrieve column names
-            ResultSetMetaData rsMetaData = rs.getMetaData();
-            int columnCount = rsMetaData.getColumnCount();
+        // Serialize the ConnectionCredentials object to JSON
+        String userInputJson = objectMapper.writeValueAsString(userInput);
+        System.out.println("Serialized ConnectionCredentials: " + userInputJson);
 
-            try (var mongoClient = MongoClients.create(userInput.getMongoConnectionString())) {
-                MongoDatabase mongoDatabase = mongoClient.getDatabase(username); // Use username as the database name
-                MongoCollection<Document> collection = mongoDatabase.getCollection(userInput.getMongoCollection());
+        JobDetail jobDetail = JobBuilder.newJob(DataTransferJob.class)
+                .withIdentity(jobId)
+                .usingJobData("userInput", userInputJson)
+                .usingJobData("username", username)
+                .usingJobData("userId", userId)
+                .build();
 
-                while (rs.next()) {
-                    Document document = new Document();
+        // Trigger the job to start now
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(jobId)
+                .startNow()
+                .build();
 
-                    for (int i = 1; i <= columnCount; i++) {
-                        String columnName = rsMetaData.getColumnName(i);
-                        Object columnValue = rs.getObject(i);
-                        document.append(columnName, columnValue);
-                    }
+        // Schedule the job
+        quartzScheduler.scheduleJob(jobDetail, trigger);
 
-                    documents.add(document);
-                    collection.insertOne(document);
-                }
-            }
+        return Response.ok("{\"JobID\":\"" + jobId + "\"}")
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
 
-            return Response.ok(documents).build(); // Returning the list of documents
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error occurred: " + e.getMessage())
-                    .build();
+    @GET
+    @Path("/status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<JobStatusListener.JobInfo> getJobStatuses() {
+        String username = jwt.getClaim("username");
+        List<JobStatusListener.JobInfo> jobs = jobStatusListener.getJobsForUser(username);
+        if (jobs == null) {
+            jobs = new ArrayList<>(); // Return an empty list if no jobs are found
         }
+        return jobs; // Directly return the list
     }
 }
+
 //{
 //  "mysqlHost": "localhost",
 //  "mysqlPort": "3306",

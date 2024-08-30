@@ -1,7 +1,8 @@
 package Connections.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 //A DTO (Data Transfer Object) file to cook the credentials
 public class ConnectionCredentials {
@@ -9,9 +10,9 @@ public class ConnectionCredentials {
     private String mysqlPort;
     private String mysqlDb;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty
     private String mysqlUser;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty
     private String mysqlPassword;
     private String tableName;
 
@@ -90,5 +91,15 @@ public class ConnectionCredentials {
 
     public void setMongoConnectionString(String mongoConnectionString) {
         this.mongoConnectionString = mongoConnectionString;
+    }
+    // Override toString() to return a JSON representation
+    @Override
+    public String toString() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert ConnectionCredentials to JSON string", e);
+        }
     }
 }

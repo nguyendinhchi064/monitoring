@@ -104,7 +104,7 @@ public class AuthService {
                     .build();
         }
 
-        // Create a MongoDB database named after the username
+        // Create a MongoDB database named after the username and remember to have at least 1 collection to make the "username" database appear
         createMongoDatabaseForUser(user.getUserName());
 
         // JWT token generation and user authentication logic

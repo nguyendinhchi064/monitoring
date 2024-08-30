@@ -12,6 +12,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./quartz_tables.sql:/docker-entrypoint-initdb.d/quartz_tables.sql
     ports:
       - "3306:3306"
 
