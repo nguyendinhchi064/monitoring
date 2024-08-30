@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateCollectionsTable(collections) {
         const tableBody = document.getElementById('collections-table-body');
         tableBody.innerHTML = ''; // Clear the table before inserting new data
-
         collections.forEach(collectionName => {
             const row = document.createElement('tr');
             const cell = document.createElement('td');
@@ -58,15 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
             tableBody.appendChild(row);
         });
-
-        // Initialize DataTable after populating the table
-        const table = new simpleDatatables.DataTable("#collections-table", {
-            searchable: true,
-            fixedHeight: true
-        });
+        new simpleDatatables.DataTable(document.querySelector('#collections-table'));
     }
-
-    fetchCollections();
 
     // Event listener for the Submit button to create a new collection
     document.querySelector('.btn-create-collection').addEventListener('click', () => {

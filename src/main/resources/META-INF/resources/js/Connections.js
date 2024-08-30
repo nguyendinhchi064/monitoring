@@ -1,7 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
     const token = localStorage.getItem('token');
 
-    // Handle the Data Transfer Submission
+    const tableHead = document.getElementById('tableHead');
+    const tableBody = document.getElementById('tableBody');
+
+    if (!tableHead || !tableBody) {
+        console.error('Table elements not found');
+        return;  // Stop execution if table elements are not found
+    }
+
     document.getElementById('submitDataTransfer').addEventListener('click', function (event) {
         event.preventDefault();
 
@@ -30,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data: JSON.stringify(data),
             success: function (response) {
                 console.log('Job ID:', response);
-                setTimeout(fetchJobStatuses, 1000);
+                setTimeout(fetchJobStatuses, 1000);  // Fetch job statuses after a delay
             },
             error: function (xhr, status, error) {
                 console.error('Error during data transfer:', error);
@@ -38,21 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Handle Refresh Button Click
-    document.getElementById('refreshTable').addEventListener('click', function () {
-        clearJobStatusTable();
-        fetchJobStatuses();
-    });
-
     function fetchJobStatuses() {
-        const tableHead = document.getElementById('tableHead');
-        const tableBody = document.getElementById('tableBody');
-
-        if (!tableHead || !tableBody) {
-            console.error('Table elements not found');
-            return;
-        }
-
         $.ajax({
             url: '/db_transfer/status',
             type: 'GET',
@@ -86,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         tableBody.appendChild(row);
                     });
 
-                    // Initialize or Refresh Simple-DataTables
+                    // Initialize or reinitialize Simple-DataTables
                     if (tableBody.dataset.datatable) {
                         const dataTable = simpleDatatables.DataTable.instances.find(dt => dt.table === document.querySelector('#jobStatusTable'));
                         if (dataTable) {
@@ -97,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     const noDataRow = document.createElement('tr');
                     const noDataCell = document.createElement('td');
-                    noDataCell.colSpan = 1; // Assume a single column if no data
+                    noDataCell.colSpan = 1;  // Assume a single column if no data
                     noDataCell.textContent = 'No data available';
                     noDataRow.appendChild(noDataCell);
                     tableBody.appendChild(noDataRow);
@@ -110,12 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function clearJobStatusTable() {
-        const tableHead = document.getElementById('tableHead');
-        const tableBody = document.getElementById('tableBody');
-
-        if (tableHead) tableHead.innerHTML = '';
-        if (tableBody) tableBody.innerHTML = '';
+        tableHead.innerHTML = '';
+        tableBody.innerHTML = '';
     }
+
+    document.getElementById('refreshTable').addEventListener('click', function () {
+        clearJobStatusTable();
+        fetchJobStatuses();
+    });
 
     fetchJobStatuses();
 });
