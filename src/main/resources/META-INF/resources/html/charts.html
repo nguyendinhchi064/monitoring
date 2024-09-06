@@ -88,9 +88,23 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-chart-area me-1"></i>
-                        Area Chart Example
+                        Documents of a specific collection
+                        <div class="table-title">
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-3">
+                                    <label for="CollectionNameInput">
+                                        <input type="text" id="CollectionNameInput" placeholder="Enter Collection Name">
+                                    </label>
+                                </div>
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-info btn-fetch-data"><i class="fa fa-plus"></i> Show Data</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="30"></canvas></div>
+                    <div class="card-body"><canvas id="collectionDataChart" width="100%" height="30"></canvas></div>
                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                 </div>
                 <div class="row">
@@ -98,9 +112,9 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-bar me-1"></i>
-                                Bar Chart Example
+                                User's collection
                             </div>
-                            <div class="card-body"><canvas id="myBarChart" width="100%" height="50"></canvas></div>
+                            <div class="card-body"><canvas id="collectionCreationChart" width="100%" height="50"></canvas></div>
                             <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                         </div>
                     </div>
@@ -108,9 +122,9 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-pie me-1"></i>
-                                Pie Chart Example
+                                The total number of documents in each collections
                             </div>
-                            <div class="card-body"><canvas id="myPieChart" width="100%" height="50"></canvas></div>
+                            <div class="card-body"><canvas id="collectionPieChart" width="100%" height="50"></canvas></div>
                             <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                         </div>
                     </div>
@@ -128,6 +142,11 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../js/scripts.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+<script src="../js/CollectionsBarChart.js"></script>
+<script src="../js/DocPieChart.js"></script>
+<script src="../js/DataTransferChart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </body>
 </html>

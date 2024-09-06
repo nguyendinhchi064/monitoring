@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @ApplicationScoped
@@ -26,7 +27,14 @@ public class MongoDBService {
     public void createCollection(String dbName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         database.createCollection(collectionName);
+
+        // Log the collection creation time
+        MongoCollection<Document> logCollection = database.getCollection("collectionLogs");
+        Document logEntry = new Document("collectionName", collectionName)
+                .append("createdAt", new Date());
+        logCollection.insertOne(logEntry);
     }
+
 
     public void dropCollection(String dbName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
@@ -42,10 +50,6 @@ public class MongoDBService {
         MongoCollection<Document> collection = getCollection(dbName, collectionName);
         List<Document> documents = collection.find().into(new ArrayList<>());
 
-        // Remove The Id
-        for (Document doc : documents) {
-            doc.remove("_id");
-        }
 
         return documents;
     }
@@ -63,5 +67,22 @@ public class MongoDBService {
     private MongoCollection<Document> getCollection(String dbName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         return database.getCollection(collectionName);
+    }
+
+    public List<Document> getCollectionDocumentCounts(String dbName) {
+        MongoDatabase database = mongoClient.getDatabase(dbName);
+        List<Document> collectionStats = new ArrayList<>();
+
+        for (String collectionName : database.listCollectionNames()) {
+            if (!"collectionLogs".equals(collectionName)) {
+                MongoCollection<Document> collection = database.getCollection(collectionName);
+                long count = collection.countDocuments();
+
+                Document collectionStat = new Document("collectionName", collectionName)
+                        .append("documentCount", count);
+                collectionStats.add(collectionStat);
+            }
+        }
+        return collectionStats;
     }
 }

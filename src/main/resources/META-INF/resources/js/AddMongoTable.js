@@ -1,52 +1,74 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const apiBaseUrl = 'http://localhost:8080/log';
+document.addEventListener("DOMContentLoaded", function () {
     const token = localStorage.getItem('token');
 
-    // Function to create a new collection
-    async function createCollection(collectionName) {
-        try {
-            const response = await fetch(`${apiBaseUrl}/${collectionName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (response.ok) {
-                alert('Collection created successfully!');
-                fetchCollections(); // Refresh the list of collections
-            } else {
-                const errorText = await response.text();
-                alert('Failed to create collection. ' + errorText);
-            }
-        } catch (error) {
-            console.error('Error creating collection:', error);
+    // Event listener for creating a new collection
+    document.querySelector('.btn-create-collection').addEventListener('click', function () {
+        const collectionName = document.getElementById('NewCollectionName').value.trim();
+        if (!collectionName) {
+            alert('Please enter a collection name.');
+            return;
         }
-    }
 
-    // Function to fetch all collections and populate the table
-    async function fetchCollections() {
-        try {
-            const response = await fetch(`${apiBaseUrl}/collections`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+        const apiUrl = 'http://localhost:8080/log/create'; // Adjust the endpoint if needed
+        const data = { collectionName: collectionName };
+
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Handle plain text response
+                    return response.text();
+                } else {
+                    return response.text().then(text => { throw new Error(text); });
                 }
+            })
+            .then(message => {
+                console.log(message);
+                alert(message);
+                fetchCollections();  // Refresh the list of collections
+            })
+            .catch(error => {
+                console.error('Error creating collection:', error);
+                alert('Error creating collection: ' + error.message);
             });
-            if (response.ok) {
-                const collections = await response.json();
+    });
+
+
+    // Function to fetch and update the list of collections
+    function fetchCollections() {
+        const collectionsUrl = 'http://localhost:8080/log/collections'; // Ensure this URL matches your actual API
+        fetch(collectionsUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to fetch collections');
+                }
+            })
+            .then(collections => {
+                console.log('Fetched collections:', collections);
+                localStorage.setItem('collectionsFetched', 'true');
                 populateCollectionsTable(collections);
-            } else {
-                const errorText = await response.text();
-                alert('Failed to fetch collections. ' + errorText);
-            }
-        } catch (error) {
-            console.error('Error fetching collections:', error);
-        }
+            })
+            .catch(error => {
+                console.error('Error fetching collections:', error);
+                alert('Error fetching collections: ' + error.message);
+            });
     }
 
-    // Function to populate the table with the list of collections
+    // Function to populate the table with collections
     function populateCollectionsTable(collections) {
         const tableBody = document.getElementById('collections-table-body');
         tableBody.innerHTML = ''; // Clear the table before inserting new data
@@ -57,19 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
             tableBody.appendChild(row);
         });
-        new simpleDatatables.DataTable(document.querySelector('#collections-table'));
     }
 
-    // Event listener for the Submit button to create a new collection
-    document.querySelector('.btn-create-collection').addEventListener('click', () => {
-        const collectionName = document.getElementById('NewCollectionName').value.trim();
-        if (collectionName) {
-            createCollection(collectionName);
-        } else {
-            alert('Please enter a collection name.');
-        }
-    });
-
-    // Fetch and display the list of collections when the page loads
+    // Initial fetch of collections to populate the table on load
     fetchCollections();
 });

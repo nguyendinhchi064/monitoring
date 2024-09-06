@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
+import java.util.Map;
 
 @Path("/log")
 @RolesAllowed("User")
@@ -29,11 +30,15 @@ public class LogResource {
     }
 
     @POST
-    @Path("/{collectionName}")
-    public Response createCollection(@PathParam("collectionName") String collectionName) {
+    @Path("/create")
+    public Response createCollection(Map<String, String> jsonPayload) {
+        String collectionName = jsonPayload.get("collectionName");
         mongoDBService.createCollection(getDatabaseName(), collectionName);
-        return Response.ok("Collection created successfully").build();
+        return Response.ok("Collection created successfully")
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
+
 
     @GET
     @Path("/collections")
@@ -63,32 +68,49 @@ public class LogResource {
                 .build();
     }
 
-    @PUT
-    @Path("/{collectionName}/data")
-    public Response updateData(@PathParam("collectionName") String collectionName,
-                               List<Document> updates) {
-        for (Document updateData : updates) {
-            Document query = new Document("_id", updateData.get("_id"));
-            Document update = new Document();
-            updateData.keySet().forEach(key -> {
-                if (!"_id".equals(key)) {
-                    update.append(key, updateData.get(key));
-                }
-            });
-            mongoDBService.updateData(getDatabaseName(), collectionName, query, update);
-        }
-        return Response.ok("Data updated successfully")
+    @GET
+    @Path("/collectionLogs")
+    public Response getCollectionLogs() {
+        List<Document> logs = mongoDBService.getData(getDatabaseName(), "collectionLogs");
+        return Response.ok(logs)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
 
-    @DELETE
-    @Path("/{collectionName}/data")
-    public Response deleteData(@PathParam("collectionName") String collectionName,
-                               List<Document> queries) {
-        queries.forEach(query -> mongoDBService.deleteData(getDatabaseName(), collectionName, query));
-        return Response.ok("Data deleted successfully")
-                .type(MediaType.APPLICATION_JSON)
-                .build();
+    @GET
+    @Path("/collectionStats")
+    public Response getCollectionDocumentCounts() {
+        List<Document> collectionStats = mongoDBService.getCollectionDocumentCounts(getDatabaseName());
+        return Response.ok(collectionStats).type(MediaType.APPLICATION_JSON).build();
     }
+
+
+//    @PUT
+//    @Path("/{collectionName}/data")
+//    public Response updateData(@PathParam("collectionName") String collectionName,
+//                               List<Document> updates) {
+//        for (Document updateData : updates) {
+//            Document query = new Document("_id", updateData.get("_id"));
+//            Document update = new Document();
+//            updateData.keySet().forEach(key -> {
+//                if (!"_id".equals(key)) {
+//                    update.append(key, updateData.get(key));
+//                }
+//            });
+//            mongoDBService.updateData(getDatabaseName(), collectionName, query, update);
+//        }
+//        return Response.ok("Data updated successfully")
+//                .type(MediaType.APPLICATION_JSON)
+//                .build();
+//    }
+//
+//    @DELETE
+//    @Path("/{collectionName}/data")
+//    public Response deleteData(@PathParam("collectionName") String collectionName,
+//                               List<Document> queries) {
+//        queries.forEach(query -> mongoDBService.deleteData(getDatabaseName(), collectionName, query));
+//        return Response.ok("Data deleted successfully")
+//                .type(MediaType.APPLICATION_JSON)
+//                .build();
+//    }
 }

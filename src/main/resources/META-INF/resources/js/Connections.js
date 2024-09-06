@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
             data: JSON.stringify(data),
             success: function (response) {
                 console.log('Job ID:', response);
+                localStorage.setItem('dataTransferred', 'true');
                 setTimeout(fetchJobStatuses, 1000);  // Fetch job statuses after a delay
             },
             error: function (xhr, status, error) {

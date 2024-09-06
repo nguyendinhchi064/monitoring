@@ -1742,6 +1742,7 @@ progress {
     color: var(--bs-table-color);
     vertical-align: top;
     border-color: var(--bs-table-border-color);
+    text-align: center;
 }
 .table > :not(caption) > * > *, .datatable-table > :not(caption) > * > * {
     padding: 0.5rem 0.5rem;
@@ -1770,11 +1771,9 @@ progress {
 
 .table-bordered > :not(caption) > *, .datatable-table > :not(caption) > * {
     border-width: 1px 0;
-    text-align: center;
 }
 .table-bordered > :not(caption) > * > *, .datatable-table > :not(caption) > * > * {
     border-width: 0 1px;
-    text-align: center;
 }
 
 .table-borderless > :not(caption) > * > * {
@@ -11159,18 +11158,18 @@ body {
 
 .datatable-table > thead > tr > th {
     vertical-align: bottom;
-    text-align: left;
+    text-align: center;
     border-bottom: none;
 }
 
 .datatable-table > tfoot > tr > th {
     vertical-align: bottom;
-    text-align: left;
+    text-align: center;
 }
 
 .datatable-table th {
     vertical-align: bottom;
-    text-align: left;
+    text-align: center;
 }
 
 .datatable-table th a {

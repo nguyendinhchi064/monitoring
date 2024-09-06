@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
 
     // Function to fetch all collections and populate the table
-    async function fetchCollections() {
+    async function FetchCollections() {
         try {
             const response = await fetch(`${apiBaseUrl}/collections`, {
                 method: 'GET',
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to populate the table with the list of collections
     function populateCollectionsTable(collections) {
-        const tableBody = document.getElementById('collections-table-body');
+        const tableBody = document.getElementById('Collections-table-body');
         tableBody.innerHTML = ''; // Clear the table before inserting new data
 
         collections.forEach(collectionName => {
@@ -44,5 +44,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    fetchCollections();
+    FetchCollections();
 });
