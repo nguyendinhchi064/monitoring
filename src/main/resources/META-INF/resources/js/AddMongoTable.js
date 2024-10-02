@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const cell = document.createElement('td');
             cell.textContent = collectionName;
             row.appendChild(cell);
-            tableBody.appendChild(row);
+            tableBody.appendChild(row)
         });
     }
 

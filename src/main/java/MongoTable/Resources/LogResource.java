@@ -7,8 +7,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -85,25 +87,95 @@ public class LogResource {
     }
 
 
-//    @PUT
-//    @Path("/{collectionName}/data")
-//    public Response updateData(@PathParam("collectionName") String collectionName,
-//                               List<Document> updates) {
-//        for (Document updateData : updates) {
-//            Document query = new Document("_id", updateData.get("_id"));
-//            Document update = new Document();
-//            updateData.keySet().forEach(key -> {
-//                if (!"_id".equals(key)) {
-//                    update.append(key, updateData.get(key));
-//                }
-//            });
-//            mongoDBService.updateData(getDatabaseName(), collectionName, query, update);
-//        }
-//        return Response.ok("Data updated successfully")
-//                .type(MediaType.APPLICATION_JSON)
-//                .build();
-//    }
-//
+    // Fetch Latest Data from `collectionLogs`
+    @GET
+    @Path("/collectionLogs/latest")
+    public Response getLatestCollectionLogs() {
+        Document latestLog = mongoDBService.getLatestDocument(getDatabaseName(), "collectionLogs");
+        if (latestLog == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No logs found").build();
+        }
+        return Response.ok(latestLog)
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
+    // Fetch Latest Date and Timestamp in User Specified Collection
+    @GET
+    @Path("/{collectionName}/latest-timestamp")
+    public Response getLatestDateAndTimestampInCollection(@PathParam("collectionName") String collectionName) {
+        Document latestDocument = mongoDBService.getLatestDocument(getDatabaseName(), collectionName);
+        if (latestDocument == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No data found in the collection").build();
+        }
+
+        // Extract date and timestamp fields if they exist
+        Object latestDate = latestDocument.get("date");
+        Object latestTimestamp = latestDocument.get("timestamp");
+
+        // If both date and timestamp are null, extract timestamp from _id
+        if (latestDate == null && latestTimestamp == null && latestDocument.containsKey("_id")) {
+            ObjectId id = latestDocument.getObjectId("_id");  // Extract _id as ObjectId
+            latestTimestamp = id.getDate();  // Get the timestamp from the ObjectId
+        }
+
+        Document response = new Document()
+                .append("latestDate", latestDate)
+                .append("latestTimestamp", latestTimestamp);
+
+        return Response.ok(response)
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
+
+
+    @GET
+    @Path("/user/latest")
+    public Response getLatestUserDatabaseEntry() {
+        List<String> collections = mongoDBService.listCollections(getDatabaseName());
+        Document latestEntry = null;
+        String latestCollection = null;
+
+        for (String collection : collections) {
+            Document latestDocInCollection = mongoDBService.getLatestDocument(getDatabaseName(), collection);
+
+            if (latestDocInCollection != null) {
+                // Get date and timestamp fields
+                Date latestDate = latestDocInCollection.getDate("date");
+                if (latestDate == null) {
+                    // If date is null, try using the timestamp field
+                    Object timestamp = latestDocInCollection.get("timestamp");
+                    if (timestamp != null && timestamp instanceof Date) {
+                        latestDate = (Date) timestamp;
+                    }
+                }
+
+                if (latestDate == null && latestDocInCollection.containsKey("_id")) {
+                    // If both date and timestamp are null, extract date from _id
+                    latestDate = ((ObjectId) latestDocInCollection.get("_id")).getDate();
+                }
+
+                if (latestEntry == null || (latestDate != null && latestEntry.getDate("date") != null &&
+                        latestDate.after(latestEntry.getDate("date")))) {
+                    latestEntry = latestDocInCollection;
+                    latestCollection = collection;
+                }
+            }
+        }
+
+        if (latestEntry == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No data found in user's database").build();
+        }
+
+        return Response.ok(latestEntry.append("collection", latestCollection))
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
+
+
+
 //    @DELETE
 //    @Path("/{collectionName}/data")
 //    public Response deleteData(@PathParam("collectionName") String collectionName,

@@ -80,22 +80,24 @@
           <li class="breadcrumb-item active">Dashboard</li>
         </ol>
         <div class="row">
-          <div class="col-xl-6">
+          <div class="col-lg-6">
             <div class="card mb-4">
               <div class="card-header">
-                <i class="fas fa-chart-area me-1"></i>
-                Area Chart Example
+                <i class="fas fa-chart-pie me-1"></i>
+                Data in each collection
               </div>
-              <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+              <div class="card-body"><canvas id="collectionPieChart" width="100%" height="50"></canvas></div>
+              <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
             </div>
           </div>
-          <div class="col-xl-6">
+          <div class="col-lg-6">
             <div class="card mb-4">
               <div class="card-header">
                 <i class="fas fa-chart-bar me-1"></i>
-                Bar Chart Example
+                Total collection
               </div>
-              <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+              <div class="card-body"><canvas id="collectionCreationChart" width="100%" height="50"></canvas></div>
+              <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
             </div>
           </div>
         </div>
@@ -126,8 +128,11 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="../js/scripts.js"></script>
+<script src="../js/DocPieChart.js"></script>
+<script src="../js/CollectionsBarChart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
 <script src="../js/ShowCollections.js"></script>
+<script src="../js/TokenAbout.js"></script>
 </body>
 </html>

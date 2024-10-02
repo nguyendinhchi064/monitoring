@@ -29,12 +29,6 @@ public class DataTransferJob implements Job {
         String userInputJson = context.getMergedJobDataMap().getString("userInput");
         String username = context.getMergedJobDataMap().getString("username");
         try {
-            Thread.sleep(15 * 1000);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
-
-        try {
             // Deserialize the JSON string back into a ConnectionCredentials object
             ConnectionCredentials userInput = objectMapper.readValue(userInputJson, ConnectionCredentials.class);
             System.out.println("Deserialized MySQL User: " + userInput.getMysqlUser());

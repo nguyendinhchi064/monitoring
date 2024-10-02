@@ -1,82 +1,90 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('collectionPieChart').getContext('2d');
-    let pieChart;
+    // Function to generate random colors for the collections
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
 
-    // Function to fetch collection statistics and update the pie chart
-    async function fetchCollectionStats() {
-        const apiBaseUrl = 'http://localhost:8080/log';  // Adjust as per your actual API URL
-        const token = localStorage.getItem('token');  // Ensure the token is available
+    // Function to set up the pie chart
+    function setupPieChart(collectionLabels, collectionData) {
+        const ctx = document.getElementById('collectionPieChart').getContext('2d');
+        if (window.pieChart) {
+            window.pieChart.destroy();
+        }
+
+        // Generate dynamic colors for each collection
+        const dynamicColors = collectionLabels.map(() => getRandomColor());
+
+        window.pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: collectionLabels,
+                datasets: [{
+                    label: 'Number of Documents per Collection',
+                    data: collectionData,
+                    backgroundColor: dynamicColors,
+                    borderColor: dynamicColors.map(color => color.replace(/0.2/, '1')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const label = tooltipItem.label || '';
+                                const value = tooltipItem.raw;
+                                return `${label}: ${value} documents`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to fetch and display the collections data in the pie chart
+    async function fetchAndDisplayCollections() {
+        const apiBaseUrl = 'http://localhost:8080/log'; // Adjust API URL if needed
+        const token = localStorage.getItem('token');
 
         try {
             const response = await fetch(`${apiBaseUrl}/collectionStats`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch collection stats: ${response.status} ${response.statusText}`);
+                throw new Error(`Failed to fetch collection data: ${response.status} ${response.statusText}`);
             }
 
-            const collectionStats = await response.json();
-            const labels = collectionStats.map(stat => stat.collectionName);
-            const data = collectionStats.map(stat => stat.documentCount);
+            const collections = await response.json();
+            console.log('Fetched collections:', collections); // Debug: log the fetched data
 
-            updatePieChart(labels, data);
+            const collectionLabels = collections.map(col => col.collectionName);  // Adjust according to your data structure
+            const collectionData = collections.map(col => col.documentCount);     // Adjust according to your data structure
+
+            setupPieChart(collectionLabels, collectionData);  // Set up the chart with the new data
 
         } catch (error) {
-            console.error('Error fetching collection stats:', error);
+            console.error('Error fetching collection data:', error.message);
         }
     }
 
-    // Function to update the pie chart
-    function updatePieChart(labels, data) {
-        if (pieChart) {
-            pieChart.destroy();  // Destroy the old chart before creating a new one
-        }
+    // Initial fetch of collections to populate the pie chart on load
+    fetchAndDisplayCollections();
 
-        pieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Document Count by Collection',
-                    data: data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true
-            }
-        });
-    }
-
-    // Initial fetch to populate the pie chart when the page loads
-    fetchCollectionStats();
-
-    // Listen to localStorage changes (when triggered by other pages)
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'collectionUpdated' || event.key === 'dataTransferred') {
-            fetchCollectionStats();
-            localStorage.removeItem(event.key);  // Clean up after the update
-        }
-    });
 });
+
+
