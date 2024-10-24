@@ -35,69 +35,7 @@ CREATE TABLE QRTZ_TRIGGERS (
                                    ON DELETE CASCADE
 );
 
-CREATE TABLE QRTZ_SIMPLE_TRIGGERS (
-                                      SCHED_NAME VARCHAR(120) NOT NULL,
-                                      TRIGGER_NAME VARCHAR(200) NOT NULL,
-                                      TRIGGER_GROUP VARCHAR(200) NOT NULL,
-                                      REPEAT_COUNT BIGINT(7) NOT NULL,
-                                      REPEAT_INTERVAL BIGINT(12) NOT NULL,
-                                      TIMES_TRIGGERED BIGINT(10) NOT NULL,
-                                      PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
-                                      FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                          REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                          ON DELETE CASCADE
-);
 
-CREATE TABLE QRTZ_CRON_TRIGGERS (
-                                    SCHED_NAME VARCHAR(120) NOT NULL,
-                                    TRIGGER_NAME VARCHAR(200) NOT NULL,
-                                    TRIGGER_GROUP VARCHAR(200) NOT NULL,
-                                    CRON_EXPRESSION VARCHAR(120) NOT NULL,
-                                    TIME_ZONE_ID VARCHAR(80),
-                                    PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
-                                    FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                        REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                        ON DELETE CASCADE
-);
-
-CREATE TABLE QRTZ_SIMPROP_TRIGGERS (
-                                       SCHED_NAME VARCHAR(120) NOT NULL,
-                                       TRIGGER_NAME VARCHAR(200) NOT NULL,
-                                       TRIGGER_GROUP VARCHAR(200) NOT NULL,
-                                       STR_PROP_1 VARCHAR(512) NULL,
-                                       STR_PROP_2 VARCHAR(512) NULL,
-                                       STR_PROP_3 VARCHAR(512) NULL,
-                                       INT_PROP_1 INT NULL,
-                                       INT_PROP_2 INT NULL,
-                                       LONG_PROP_1 BIGINT NULL,
-                                       LONG_PROP_2 BIGINT NULL,
-                                       DEC_PROP_1 NUMERIC(13,4) NULL,
-                                       DEC_PROP_2 NUMERIC(13,4) NULL,
-                                       BOOL_PROP_1 VARCHAR(1) NULL,
-                                       BOOL_PROP_2 VARCHAR(1) NULL,
-                                       PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
-                                       FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                           REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                           ON DELETE CASCADE
-);
-
-CREATE TABLE QRTZ_BLOB_TRIGGERS (
-                                    SCHED_NAME VARCHAR(120) NOT NULL,
-                                    TRIGGER_NAME VARCHAR(200) NOT NULL,
-                                    TRIGGER_GROUP VARCHAR(200) NOT NULL,
-                                    BLOB_DATA BLOB NULL,
-                                    PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
-                                    FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                        REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
-                                        ON DELETE CASCADE
-);
-
-CREATE TABLE QRTZ_CALENDARS (
-                                SCHED_NAME VARCHAR(120) NOT NULL,
-                                CALENDAR_NAME VARCHAR(200) NOT NULL,
-                                CALENDAR BLOB NOT NULL,
-                                PRIMARY KEY (SCHED_NAME,CALENDAR_NAME)
-);
 
 CREATE TABLE QRTZ_PAUSED_TRIGGER_GRPS (
                                           SCHED_NAME VARCHAR(120) NOT NULL,
@@ -136,20 +74,15 @@ CREATE TABLE QRTZ_LOCKS (
                             PRIMARY KEY (SCHED_NAME,LOCK_NAME)
 );
 
-CREATE TABLE QRTZ_SIMPLE_PROPERTIES (
-                                        SCHED_NAME VARCHAR(120) NOT NULL,
-                                        JOB_NAME VARCHAR(200) NOT NULL,
-                                        JOB_GROUP VARCHAR(200) NOT NULL,
-                                        KEY_NAME VARCHAR(100) NOT NULL,
-                                        VALUE VARCHAR(512) NULL,
-                                        PRIMARY KEY (SCHED_NAME, JOB_NAME, JOB_GROUP, KEY_NAME)
-);
-
-CREATE TABLE QRTZ_CRON_PROPERTIES (
+CREATE TABLE QRTZ_SIMPLE_TRIGGERS (
                                       SCHED_NAME VARCHAR(120) NOT NULL,
-                                      JOB_NAME VARCHAR(200) NOT NULL,
-                                      JOB_GROUP VARCHAR(200) NOT NULL,
-                                      CRON_EXPRESSION VARCHAR(120) NOT NULL,
-                                      TIME_ZONE_ID VARCHAR(80),
-                                      PRIMARY KEY (SCHED_NAME,JOB_NAME,JOB_GROUP)
+                                      TRIGGER_NAME VARCHAR(200) NOT NULL,
+                                      TRIGGER_GROUP VARCHAR(200) NOT NULL,
+                                      REPEAT_COUNT BIGINT(7) NOT NULL,
+                                      REPEAT_INTERVAL BIGINT(12) NOT NULL,
+                                      TIMES_TRIGGERED BIGINT(10) NOT NULL,
+                                      PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP),
+                                      FOREIGN KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
+                                          REFERENCES QRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
+                                          ON DELETE CASCADE
 );

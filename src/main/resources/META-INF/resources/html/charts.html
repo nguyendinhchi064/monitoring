@@ -28,7 +28,7 @@
                 <li><a class="dropdown-item" href="UserProfile.html">Settings</a></li>
                 <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="login.html">Logout</a></li>
+                <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
             </ul>
         </li>
     </ul>
@@ -80,9 +80,31 @@
                 </ol>
                 <div class="card mb-4">
                     <div class="card-body">
-                        Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
-                        <a target="_blank" href="https://www.chartjs.org/docs/latest/">Chart.js documentation</a>
-                        .
+                        This section show about JobInfo status and the central database information.
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-pie me-1"></i>
+                                Data in each collection
+                            </div>
+                            <div class="card-body">
+                                <div id="collectionPiePlotlyChart" style="width:100%;height:400px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-pie me-1"></i>
+                                Job Status Overview
+                            </div>
+                            <div class="card-body">
+                                <div id="jobStatusPlotlyChart" style="width:100%;height:400px;"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card mb-4">
@@ -107,8 +129,6 @@
                     <div class="card-body"><canvas id="collectionDataChart" width="100%" height="30"></canvas></div>
                     <div class="card-footer small text-muted" id="dataTransferFooter">Updated at: </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-6">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-bar me-1"></i>
@@ -118,18 +138,6 @@
                             <div class="card-footer small text-muted" id="collectionBarFooter">Updated at: </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-pie me-1"></i>
-                                Data in each collection
-                            </div>
-                            <div class="card-body"><canvas id="collectionPieChart" width="100%" height="50"></canvas></div>
-                            <div class="card-footer small text-muted" id="docPieFooter">Updated at: </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </main>
         <footer class="py-4 bg-light mt-auto">
             <div class="container-fluid px-4">
@@ -148,6 +156,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="../js/TokenAbout.js"></script>
+<script src="../js/ShowTimeUpdate.js"></script>
+<script src="../js/JobStatusChart.js"></script>
+<script src="/js/CheckLogin.js"></script>
 </body>
 </html>

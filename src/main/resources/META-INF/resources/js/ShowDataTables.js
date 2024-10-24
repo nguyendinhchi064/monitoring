@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const apiBaseUrl = 'http://localhost:8080/log';
     const token = localStorage.getItem('token');
+    let dataTableInstance = null; // Store reference to DataTable instance
 
     // Function to fetch data from a specific collection and populate the table
     async function fetchCollectionData(collectionName) {
@@ -14,7 +15,21 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (response.ok) {
                 const data = await response.json();
+
+                // Clear the existing DataTable instance if it exists
+                if (dataTableInstance) {
+                    dataTableInstance.destroy(); // Clear any existing DataTable instance
+                    dataTableInstance = null;
+                }
+
+                // Clear the table before adding new data
+                clearTable();
+
+                // Populate the table with new data
                 populateDataTable(data);
+
+                // Initialize the DataTable with new data
+                dataTableInstance = new simpleDatatables.DataTable(document.querySelector('#collection-data-table'));
             } else {
                 const errorText = await response.text();
                 alert('Failed to fetch data. ' + errorText);
@@ -24,14 +39,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Function to clear the table
+    function clearTable() {
+        const tableHeader = document.querySelector('#collection-data-table thead tr');
+        const tableBody = document.getElementById('collection-data-body');
+
+        if (tableHeader) {
+            tableHeader.innerHTML = ''; // Clear the header
+        } else {
+            console.error('Error: Table header element not found.');
+        }
+
+        if (tableBody) {
+            tableBody.innerHTML = ''; // Clear the body
+        } else {
+            console.error('Error: Table body element not found.');
+        }
+    }
+
     // Function to populate the table with fetched data
     function populateDataTable(data) {
         const tableHeader = document.querySelector('#collection-data-table thead tr');
         const tableBody = document.getElementById('collection-data-body');
 
-        // Clear any existing data
-        tableHeader.innerHTML = '';
-        tableBody.innerHTML = '';
+        // Ensure tableBody exists before populating data
+        if (!tableBody) {
+            console.error('Error: Table body element not found.');
+            return;
+        }
 
         if (data.length > 0) {
             // Populate headers dynamically based on keys in the first document
@@ -61,9 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
             row.appendChild(cell);
             tableBody.appendChild(row);
         }
-
-        // Initialize the DataTable
-        new simpleDatatables.DataTable(document.querySelector('#collection-data-table'));
     }
 
     // Event listener for the Show button

@@ -42,7 +42,12 @@ public class AuthResource {
     public Response login(LoginRequest loginRequest) {
         return authService.loginAndGenerateToken(loginRequest);
     }
-
+    @POST
+    @Path("/Logout")
+    @RolesAllowed("User")
+    public Response logout(@HeaderParam("Authorization") String authHeader) {
+        return authService.logout(authHeader);
+    }
     @POST
     @Path("/updateInfo")
     @RolesAllowed("User")

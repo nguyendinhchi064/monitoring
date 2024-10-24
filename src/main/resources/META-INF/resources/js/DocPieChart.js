@@ -9,51 +9,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return color;
     }
 
-    // Function to set up the pie chart
+    // Function to set up the pie chart using Plotly.js
     function setupPieChart(collectionLabels, collectionData) {
-        const ctx = document.getElementById('collectionPieChart').getContext('2d');
-        if (window.pieChart) {
-            window.pieChart.destroy();
-        }
-
         // Generate dynamic colors for each collection
         const dynamicColors = collectionLabels.map(() => getRandomColor());
 
-        window.pieChart = new Chart(ctx, {
+        const data = [{
+            values: collectionData,
+            labels: collectionLabels,
             type: 'pie',
-            data: {
-                labels: collectionLabels,
-                datasets: [{
-                    label: 'Number of Documents per Collection',
-                    data: collectionData,
-                    backgroundColor: dynamicColors,
-                    borderColor: dynamicColors.map(color => color.replace(/0.2/, '1')),
-                    borderWidth: 1
-                }]
+            marker: {
+                colors: dynamicColors
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                const label = tooltipItem.label || '';
-                                const value = tooltipItem.raw;
-                                return `${label}: ${value} documents`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
+            textinfo: 'label+percent',
+            hoverinfo: 'label+percent+value'
+        }];
+
+        const layout = {
+            title: 'Number of Documents per Collection',
+            height: 400,
+            width: 500,
+            showlegend: true,
+        };
+
+        // Render the Plotly pie chart
+        Plotly.newPlot('collectionPiePlotlyChart', data, layout);
     }
 
     // Function to fetch and display the collections data in the pie chart
     async function fetchAndDisplayCollections() {
-        const apiBaseUrl = 'http://localhost:8080/log'; // Adjust API URL if needed
+        const apiBaseUrl = 'http://localhost:8080/log';
         const token = localStorage.getItem('token');
 
         try {
@@ -84,7 +69,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial fetch of collections to populate the pie chart on load
     fetchAndDisplayCollections();
-
 });
-
-

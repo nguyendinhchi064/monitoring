@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!tableHead || !tableBody) {
         console.error('Table elements not found');
-        return;  // Stop execution if table elements are not found
+        return;
     }
 
     document.getElementById('submitDataTransfer').addEventListener('click', function (event) {

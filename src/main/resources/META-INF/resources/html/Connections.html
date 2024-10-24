@@ -31,7 +31,7 @@
         <li><a class="dropdown-item" href="../html/UserProfile.html">Settings</a></li>
         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
         <li><hr class="dropdown-divider" /></li>
-        <li><a class="dropdown-item" href="login.html">Logout</a></li>
+        <li><a class="dropdown-item" href="#" id="logoutLink">Logout</a></li>
       </ul>
     </li>
   </ul>
@@ -106,11 +106,11 @@
               </div>
               <div class="mb-3">
                 <label for="tableName" class="form-label">MySQL Table Name</label>
-                <input type="text" class="form-control" id="tableName" placeholder="user_db">
+                <input type="text" class="form-control" id="tableName">
               </div>
               <div class="mb-3">
                 <label for="mongoCollection" class="form-label">MongoDB Collection</label>
-                <input type="text" class="form-control" id="mongoCollection" placeholder="Testing5">
+                <input type="text" class="form-control" id="mongoCollection">
               </div>
               <button type="submit" class="btn btn-primary" id="submitDataTransfer">Submit</button>
             </form>
@@ -157,5 +157,7 @@
 <script src="../js/scripts.js"></script>
 <script src="../js/Connections.js"></script>
 <script src="../js/TokenAbout.js"></script>
+<script src="../js/Logout.js"></script>
+<script src="/js/CheckLogin.js"></script>
 </body>
 </html>

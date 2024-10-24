@@ -37,11 +37,6 @@ public class MongoDBService {
     }
 
 
-    public void dropCollection(String dbName, String collectionName) {
-        MongoDatabase database = mongoClient.getDatabase(dbName);
-        database.getCollection(collectionName).drop();
-    }
-
     public void saveData(String dbName, String collectionName, Document data) {
         MongoCollection<Document> collection = getCollection(dbName, collectionName);
         collection.insertOne(data);
@@ -55,15 +50,6 @@ public class MongoDBService {
         return documents;
     }
 
-    public void updateData(String dbName, String collectionName, Document query, Document update) {
-        MongoCollection<Document> collection = getCollection(dbName, collectionName);
-        collection.updateOne(query, new Document("$set", update));
-    }
-
-    public void deleteData(String dbName, String collectionName, Document query) {
-        MongoCollection<Document> collection = getCollection(dbName, collectionName);
-        collection.deleteOne(query);
-    }
 
     private MongoCollection<Document> getCollection(String dbName, String collectionName) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
@@ -71,9 +57,12 @@ public class MongoDBService {
     }
     public Document getLatestDocument(String databaseName, String collectionName) {
         MongoCollection<Document> collection = mongoClient.getDatabase(databaseName).getCollection(collectionName);
-        return collection.find().sort(Sorts.descending("date", "timestamp")).first();  // Sort by both date and timestamp fields
+        return collection.find().sort(Sorts.descending("createdAt")).first(); // Sort by "createdAt" field to get the latest document
     }
-
+    public Document getLatestDocumentFromId(String databaseName, String collectionName) {
+        MongoCollection<Document> collection = mongoClient.getDatabase(databaseName).getCollection(collectionName);
+        return collection.find().sort(Sorts.descending("_id")).first();  // Sort by "_id" to get the earliest document
+    }
     public List<Document> getCollectionDocumentCounts(String dbName) {
         MongoDatabase database = mongoClient.getDatabase(dbName);
         List<Document> collectionStats = new ArrayList<>();

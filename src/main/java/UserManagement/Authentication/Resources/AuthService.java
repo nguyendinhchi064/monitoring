@@ -73,6 +73,7 @@ public class AuthService {
         Pattern pattern = Pattern.compile(regex);
         return pattern.matcher(email).matches();
     }
+
     public boolean isValidPassword(String password) {
         String regex = "^(?=.*[A-Z])(?=.*[!@#$%^&*()-+]).{5,}$";
         return Pattern.matches(regex, password);
@@ -141,9 +142,44 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional
+    public Response logout(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("{\"message\":\"Invalid token format\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+
+        String token = authHeader.substring("Bearer".length()).trim();
+
+        // Log the token for debugging purposes
+        LOG.info("Attempting to log out with token: " + token);
+
+        User user = User.find("accessToken", token).firstResult();
+
+        if (user == null) {
+            LOG.warn("User not found or token invalid for token: " + token);
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("{\"message\":\"Invalid token or user not found\"}")
+                    .type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+
+        // Remove the token from the user record to invalidate it
+        user.accessToken = null;
+        em.merge(user);
+
+        LOG.info("User logged out successfully with token: " + token);
+
+        return Response.ok("{\"message\":\"Logged out successfully\"}")
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+    }
+
+
     private void createMongoDatabaseForUser(String username) {
         MongoDatabase userDatabase = mongoClient.getDatabase(username);
         System.out.println("Created MongoDB database for user: " + username);
     }
-
 }

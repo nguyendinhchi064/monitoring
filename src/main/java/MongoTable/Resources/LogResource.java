@@ -95,94 +95,68 @@ public class LogResource {
         if (latestLog == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No logs found").build();
         }
-        return Response.ok(latestLog)
+        return Response.ok(new Document("createdAt", latestLog.get("createdAt")))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
 
-    // Fetch Latest Date and Timestamp in User Specified Collection
     @GET
-    @Path("/{collectionName}/latest-timestamp")
-    public Response getLatestDateAndTimestampInCollection(@PathParam("collectionName") String collectionName) {
-        Document latestDocument = mongoDBService.getLatestDocument(getDatabaseName(), collectionName);
-        if (latestDocument == null) {
+    @Path("/{collectionName}/latest")
+    public Response getEarliestCreatedAtInCollection(@PathParam("collectionName") String collectionName) {
+        // Get the earliest document in the specified collection
+        Document earliestDocInCollection = mongoDBService.getLatestDocumentFromId(getDatabaseName(), collectionName);
+
+        if (earliestDocInCollection == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No data found in the collection").build();
         }
 
-        // Extract date and timestamp fields if they exist
-        Object latestDate = latestDocument.get("date");
-        Object latestTimestamp = latestDocument.get("timestamp");
-
-        // If both date and timestamp are null, extract timestamp from _id
-        if (latestDate == null && latestTimestamp == null && latestDocument.containsKey("_id")) {
-            ObjectId id = latestDocument.getObjectId("_id");  // Extract _id as ObjectId
-            latestTimestamp = id.getDate();  // Get the timestamp from the ObjectId
+        // Extract the timestamp from the `_id` field
+        ObjectId objectId = earliestDocInCollection.getObjectId("_id");
+        if (objectId == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("No '_id' field found in the earliest document").build();
         }
 
-        Document response = new Document()
-                .append("latestDate", latestDate)
-                .append("latestTimestamp", latestTimestamp);
+        // Get the date from the ObjectId
+        Date createdAt = objectId.getDate();
 
-        return Response.ok(response)
+        // Return only the `createdAt` field
+        return Response.ok(new Document("createdAt", createdAt))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
-
-
-
     @GET
     @Path("/user/latest")
     public Response getLatestUserDatabaseEntry() {
         List<String> collections = mongoDBService.listCollections(getDatabaseName());
-        Document latestEntry = null;
-        String latestCollection = null;
+        Date latestDate = null;
 
         for (String collection : collections) {
-            Document latestDocInCollection = mongoDBService.getLatestDocument(getDatabaseName(), collection);
+            // Get the latest document in the current collection
+            Document latestDocInCollection = mongoDBService.getLatestDocumentFromId(getDatabaseName(), collection);
 
             if (latestDocInCollection != null) {
-                // Get date and timestamp fields
-                Date latestDate = latestDocInCollection.getDate("date");
-                if (latestDate == null) {
-                    // If date is null, try using the timestamp field
-                    Object timestamp = latestDocInCollection.get("timestamp");
-                    if (timestamp != null && timestamp instanceof Date) {
-                        latestDate = (Date) timestamp;
+                // Extract the timestamp from the `_id` field
+                ObjectId objectId = latestDocInCollection.getObjectId("_id");
+                if (objectId != null) {
+                    Date createdAt = objectId.getDate();
+
+                    // Update the latestDate if this createdAt is more recent
+                    if (latestDate == null || createdAt.after(latestDate)) {
+                        latestDate = createdAt;
                     }
-                }
-
-                if (latestDate == null && latestDocInCollection.containsKey("_id")) {
-                    // If both date and timestamp are null, extract date from _id
-                    latestDate = ((ObjectId) latestDocInCollection.get("_id")).getDate();
-                }
-
-                if (latestEntry == null || (latestDate != null && latestEntry.getDate("date") != null &&
-                        latestDate.after(latestEntry.getDate("date")))) {
-                    latestEntry = latestDocInCollection;
-                    latestCollection = collection;
                 }
             }
         }
 
-        if (latestEntry == null) {
+        if (latestDate == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No data found in user's database").build();
         }
 
-        return Response.ok(latestEntry.append("collection", latestCollection))
+        // Return only the latest timestamp across all collections
+        return Response.ok(new Document("latestTime", latestDate))
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }
 
 
-
-
-//    @DELETE
-//    @Path("/{collectionName}/data")
-//    public Response deleteData(@PathParam("collectionName") String collectionName,
-//                               List<Document> queries) {
-//        queries.forEach(query -> mongoDBService.deleteData(getDatabaseName(), collectionName, query));
-//        return Response.ok("Data deleted successfully")
-//                .type(MediaType.APPLICATION_JSON)
-//                .build();
-//    }
 }
